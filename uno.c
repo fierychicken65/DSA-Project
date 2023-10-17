@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<windows.h>
+#include<time.h>
 
 //Main deck containing all the cards
 struct  Stack
@@ -16,6 +18,7 @@ struct Player{
     char color;
     struct Player * next;   
 };
+
 
 int isEmpty(struct Stack * top){
     if(top == NULL){
@@ -156,6 +159,7 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
             }
         }
     }
+    Sleep(1000);
 
     // displaying computer cards :
 
@@ -255,6 +259,8 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
         }
     }    
 
+    Sleep(1000);
+
     // printing depstack and deckstack :
 
     for(int i = 0; i < 5; ++i)
@@ -293,9 +299,9 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
     ++n;
     m = (6 * n) - 1;
     char c[5][m];
-    struct Player *playercopy = *player;
     for(int i = 0; i < 5; ++i)
     {
+        struct Player *playercopy = *player;
         for(int j = 0; j < m; ++j)
         {
             if(i == 0 || i == 4)
@@ -309,6 +315,7 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
                 else if((j + 4) % 6 == 0) 
                 {
                     c[i][j] = playercopy -> color;
+                    playercopy = playercopy -> next;
                 }
                 else c[i][j] = ' ';
             }
@@ -330,6 +337,8 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
         }
     }
 
+    Sleep(1000);
+
     // displaying player cards :
 
     for(int i = 0; i < 5; ++i)
@@ -346,6 +355,128 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
     printf("\n");
 }
 
+void insertatend(struct Player **head,char num,char color)
+{
+    struct Player *p = *head;
+    struct Player *newnode = malloc(sizeof(struct Player));
+    newnode -> color = color;
+    newnode -> num = num;
+    if(*head == NULL)
+    {
+        newnode -> next = NULL;
+        *head = newnode;   
+    }
+    else
+    {
+        while(p -> next != NULL)
+        {
+            p = p -> next;
+        }
+        newnode -> next = NULL;
+        p -> next = newnode;
+    }
+
+}
+
+void shuffle(struct Player **head,struct Stack **deck,int size)
+{
+    srand(time(NULL));
+
+    int random_number = (rand() % size) + 1;
+    if(random_number == 1)
+    {
+        struct Player *q = *head;
+        *head = (*head) -> next;
+        push(deck,q -> color, q -> num);
+        free(q);
+        return;
+    }
+    struct Player *q = (*head) -> next;
+    struct Player *p = *head;
+    for(int i = 0; i < random_number - 2; ++i)
+    {
+        p = p -> next;
+        q = q -> next;
+    }
+    p -> next = q -> next;
+    push(deck,q -> color, q -> num);
+    free(q);
+    
+}
+
+void creatcards(struct Player **head)
+{
+
+    // red cards :
+
+    insertatend(head , '0','R');
+    for(int i = 1; i <= 9; ++i)
+    {
+        insertatend(head ,(char) i + 48 ,'R');
+        insertatend(head , (char)i + 48,'R');
+    }
+    insertatend(head , 'S','R');
+    insertatend(head , 'S','R');
+    insertatend(head , 'R','R');
+    insertatend(head , 'R','R');
+    insertatend(head , '+','R');
+    insertatend(head , '+','R');
+
+    //blue cards
+        insertatend(head , '0','B');
+    for(int i = 1; i <= 9; ++i)
+    {
+        insertatend(head ,(char) i + 48 ,'B');
+        insertatend(head , (char)i + 48,'B');
+    }
+    insertatend(head , 'R','B');
+    insertatend(head , 'R','B');
+    insertatend(head , 'S','B');
+    insertatend(head , 'S','B');
+    insertatend(head , '+','B');
+    insertatend(head , '+','B');
+
+    //yellow cards
+
+        insertatend(head , '0','Y');
+    for(int i = 1; i <= 9; ++i)
+    {
+        insertatend(head ,(char) i + 48 ,'Y');
+        insertatend(head , (char)i + 48,'Y');
+        
+    }
+    insertatend(head , 'S','Y');
+    insertatend(head , 'S','Y');
+    insertatend(head , 'R','Y');
+    insertatend(head , 'R','Y');
+    insertatend(head , '+','Y');
+    insertatend(head , '+','Y');
+        
+    //green cards
+        insertatend(head , '0','G');
+    for(int i = 1; i <= 9; ++i)
+    {
+        insertatend(head ,(char) i + 48 ,'G');
+        insertatend(head , (char)i + 48,'G');
+    }   
+    insertatend(head , 'S','G');
+    insertatend(head , 'S','G');
+    insertatend(head , 'R','G');
+    insertatend(head , 'R','G');
+    insertatend(head , '+','G');
+    insertatend(head , '+','G');
+
+    //8 black cards
+    insertatend(head , 'W','K');
+    insertatend(head , 'W','K');
+    insertatend(head , 'W','K');
+    insertatend(head , 'W','K');
+    insertatend(head , '+','K');
+    insertatend(head , '+','K');
+    insertatend(head , '+','K');
+    insertatend(head , '+','K');
+
+}
 
 
 
@@ -353,11 +484,32 @@ int main()
 {
     struct Stack *deck = NULL; 
     struct Stack * dep = NULL;
-    struct Player * head1 = NULL;
-    struct Player * head2 = NULL;
-    fillNumberedUnoDeck(&deck); 
+    struct Player* head = NULL;
+    struct Player * head1 = NULL; //computer
+    struct Player * head2 = NULL; // player
+
+
+    creatcards(&head);
+
+    for(int i = 108; i > 0; --i)
+    {
+        shuffle(&head , &deck , i);
+    }
+
     DistributeFunc(&head1,&head2,&deck,&dep);
-    display(&head1,&head2,&deck,&dep);
+
+    for(int i=0; i<4; i++)
+    {
+      printf(".....WELCOME TO UNO CARD GAME.....");
+      Sleep(500);
+      system("cls");
+      Sleep(500);
+    }
+
+    struct Player *p1 = head1;
+    struct Player *p2 = head2;
+
+    display(&head2,&head1,&deck,&dep);
     
     return 0;
 }   
