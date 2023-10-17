@@ -36,16 +36,15 @@ int isFull(struct Stack * top){
         return 0;
     }
 }
-struct Stack * push(struct Stack * top,char color,char num){
-    if(isFull(top)){
+void push(struct Stack ** top,char color,char num){
+    if(isFull(*top)){
         printf("Stack Overflow\n");
     }else{
         struct Stack * ptr = malloc(sizeof(struct Stack));
         ptr->num = num;
         ptr->color = color;
-        ptr->next = top;
-        top = ptr;
-        return top;
+        ptr->next = *top;
+        *top = ptr;
     }
 }
 
@@ -79,10 +78,10 @@ void fillNumberedUnoDeck(struct Stack **deck) {
 
     // Fill the deck with numbered cards
     for (int i = 0; i < 4; i++) { // Loop through colors
-            *deck = push(*deck,colors[i],numbers[0]);
+            push(deck,colors[i],numbers[0]);
         for (int j = 1; j < 10; j++) { // Loop through numbers (1-9)
-            *deck = push(*deck, colors[i], numbers[j]);
-            *deck = push(*deck, colors[i], numbers[j]);
+            push(deck, colors[i], numbers[j]);
+            push(deck, colors[i], numbers[j]);
         }
     }
 }
@@ -94,82 +93,51 @@ int traverseNode(struct Player * ptr ){
     }
  }
 
-void DropCardFunc(struct Player * head, struct Stack ** deck) {
-    struct Player * ptr = head;
+void DropCardFunc(struct Player ** head, struct Stack ** deck) {
     char num, color;
     for (int i = 1; i <= 7; i++) {
+        struct Player * ptr = malloc(sizeof(struct Player));
         pop(deck, &num, &color);
         ptr->num = num;
         ptr->color = color;
-        ptr = ptr->next;
+        if(*head == NULL)
+        {
+            ptr -> next = NULL;
+            *head = ptr;
+        }
+        else
+        {
+            struct Player *q = *head;
+            while(q -> next != NULL)
+            {
+                q = q -> next;
+            }
+            ptr -> next = NULL;
+            q -> next = ptr;
+        }
     }
 }
 
-void DistributeFunc(struct Player * head1,struct Player * head2,struct Stack ** deck,struct Stack ** dep){
+void DistributeFunc(struct Player ** head1,struct Player ** head2,struct Stack ** deck,struct Stack ** dep){
     char num,color;
     pop(deck,&num,&color);
     char num1 = num;
     char color1 = color;
-    *dep = push(*dep,color1,num1);
+    push(dep,color1,num1);
     DropCardFunc(head1,deck);
     DropCardFunc(head2,deck);
 
 }
 
-struct Player * initializePlayer() {
-    struct Player * head = NULL;
-    struct Player * current = NULL;
-
-    for (int i = 0; i < 35; i++) {
-        struct Player * newNode = (struct Player *)malloc(sizeof(struct Player));
-        newNode->num = '\0'; // Initialize num to something appropriate
-        newNode->color = '\0'; // Initialize color to something appropriate
-        newNode->next = NULL;
-
-        if (head == NULL) {
-            head = newNode;
-            current = newNode;
-        } else {
-            current->next = newNode;
-            current = newNode;
-        }
-    }
-
-    return head;
-}
-struct Stack * initializeDepStack() {
-    struct Stack * head = NULL;
-    struct Stack * current = NULL;
-
-    for (int i = 0; i < 12; i++) {
-        struct Stack * newNode = (struct Stack *)malloc(sizeof(struct Stack));
-        newNode->num = '\0'; // Initialize num to something appropriate
-        newNode->color = '\0'; // Initialize color to something appropriate
-        newNode->next = NULL;
-
-        if (head == NULL) {
-            head = newNode;
-            current = newNode;
-        } else {
-            current->next = newNode;
-            current = newNode;
-        }
-    }
-
-    return head;
-}
-
-
-
 
 int main() {
     struct Stack *deck = NULL; 
-    struct Stack * dep = initializeDepStack();
-    struct Player * head1 = initializePlayer();
-    struct Player * head2 = initializePlayer();
+    struct Stack * dep = NULL;
+    struct Player * head1 = NULL;
+    struct Player * head2 = NULL;
     fillNumberedUnoDeck(&deck); 
     displayStack(deck);
-    DistributeFunc(head1,head2,&deck,&dep);
+    DistributeFunc(&head1,&head2,&deck,&dep);
     printf("\n\n");
     traverseNode(head1);
     printf("\n\n");
@@ -178,6 +146,6 @@ int main() {
     displayStack(deck);
     printf("\n");
     displayStack(dep);
-    dep = push(dep,'R','3');
+    push(&dep,'R','3');
     displayStack(dep);
 }
