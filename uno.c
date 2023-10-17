@@ -63,20 +63,6 @@ void pop(struct Stack **top, char *num, char *color) {
     }
 }
 
-void fillNumberedUnoDeck(struct Stack **deck) {
-    char colors[] = {'Y','B','G','R'};
-    char numbers[] = {'0','1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
-    // Fill the deck with numbered cards
-    for (int i = 0; i < 4; i++) { // Loop through colors
-            push(deck,colors[i],numbers[0]);
-        for (int j = 1; j < 10; j++) { // Loop through numbers (1-9)
-            push(deck, colors[i], numbers[j]);
-            push(deck, colors[i], numbers[j]);
-        }
-    }
-}
-
 void DropCardFunc(struct Player ** head, struct Stack ** deck) {
     char num, color;
     for (int i = 1; i <= 7; i++) {
@@ -163,8 +149,6 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
 
     // displaying computer cards :
 
-    printf("\033[0;32m");
-
     for(int i = 0; i < 5; ++i)
         {
             for(int j = 0; j < m; ++j)
@@ -173,8 +157,6 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
             }
             printf("\n");
         }
-
-    printf("\033[0m");
 
     printf("\n");
     printf("\n");
@@ -265,10 +247,43 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
 
     for(int i = 0; i < 5; ++i)
     {
+        struct Stack *colorvalue = *dep;
+        int ct = 6;
         for(int j = 0; j < m; ++j)
         {
+            if(ct == 0)
+                {
+                    ct = 6;
+                    colorvalue = colorvalue -> next;
+                }
+                if(colorvalue -> color == 'R')
+                {
+                    printf("\033[0;31m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'G')
+                {
+                    printf("\033[0;32m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'B')
+                {
+                    printf("\033[0;34m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'Y')
+                {
+                    printf("\033[0;33m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'K')
+                {
+                    printf("\033[0;30m");
+                    --ct;
+                }
             printf("%c ",b[i][j]);
         }
+        printf("\033[0m");
         for(int i = 0; i < 48; ++i)
         {
             printf(" ");
@@ -316,7 +331,7 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
                 {
                     c[i][j] = playercopy -> color;
                     playercopy = playercopy -> next;
-                }
+                }   
                 else c[i][j] = ' ';
             }
             else if(i == 3)
@@ -343,12 +358,45 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
 
     for(int i = 0; i < 5; ++i)
         {
+            struct Player *colorvalue = *player;
+            int ct = 6;
             for(int j = 0; j < m; ++j)
             {
+                if(ct == 0)
+                {
+                    ct = 6;
+                    colorvalue = colorvalue -> next;
+                }
+                if(colorvalue -> color == 'R')
+                {
+                    printf("\033[0;31m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'G')
+                {
+                    printf("\033[0;32m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'B')
+                {
+                    printf("\033[0;34m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'Y')
+                {
+                    printf("\033[0;33m");
+                    --ct;
+                }
+                else if(colorvalue -> color == 'K')
+                {
+                    printf("\033[0;30m");
+                    --ct;
+                }
                 printf("%c ",c[i][j]);
             }
             printf("\n");
         }
+        printf("\033[0m");
 
 
     printf("\n");
@@ -477,8 +525,6 @@ void creatcards(struct Player **head)
     insertatend(head , '+','K');
 
 }
-
-
 
 int main()
 {
