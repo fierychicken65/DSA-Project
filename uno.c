@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 #include<stdlib.h>
 
 //Main deck containing all the cards
@@ -9,15 +10,12 @@ struct  Stack
     struct Stack * next;
 };
 
-
-
 //Player 1
 struct Player{
     char num;
     char color;
     struct Player * next;   
-};  
-
+};
 
 int isEmpty(struct Stack * top){
     if(top == NULL){
@@ -27,6 +25,7 @@ int isEmpty(struct Stack * top){
     }
 
 }
+
 int isFull(struct Stack * top){
     struct Stack * p = malloc(sizeof(struct Stack));
     if(p==NULL){
@@ -36,6 +35,7 @@ int isFull(struct Stack * top){
         return 0;
     }
 }
+
 void push(struct Stack ** top,char color,char num){
     if(isFull(*top)){
         printf("Stack Overflow\n");
@@ -60,18 +60,6 @@ void pop(struct Stack **top, char *num, char *color) {
     }
 }
 
-
-void displayStack(struct Stack  * top){
-    struct Stack * p = top;
-    while (p != NULL)
-    {
-        printf("%c%c ",p->color,p->num);
-        p = p->next;
-    }
-    printf("\n");
-    
-}
-
 void fillNumberedUnoDeck(struct Stack **deck) {
     char colors[] = {'Y','B','G','R'};
     char numbers[] = {'0','1', '2', '3', '4', '5', '6', '7', '8', '9'};
@@ -85,13 +73,6 @@ void fillNumberedUnoDeck(struct Stack **deck) {
         }
     }
 }
-
-int traverseNode(struct Player * ptr ){
-    while(ptr!= NULL){
-        printf("%c%c ",ptr->color,ptr->num);
-        ptr = ptr->next;
-    }
- }
 
 void DropCardFunc(struct Player ** head, struct Stack ** deck) {
     char num, color;
@@ -129,23 +110,254 @@ void DistributeFunc(struct Player ** head1,struct Player ** head2,struct Stack *
 
 }
 
+void display(struct Player **player, struct Player **computer, struct Stack **deck, struct Stack **dep)
+{
+    printf("\n");
+    printf("\n");
 
-int main() {
+    // creating computer cards : 
+
+    int n = 0;
+    struct Player *count1 = *computer;
+    while(count1 -> next != NULL)
+    {
+        count1 = count1 -> next;
+        ++n;
+    }
+    ++n;
+    int m = (6 * n) - 1;
+    char a[5][m];
+    for(int i = 0; i < 5; ++i)
+    {
+        for(int j = 0; j < m; ++j)
+        {
+            if(i == 0 || i == 4)
+            {
+                if((j + 1) % 6 == 0) a[i][j] = ' ';
+                else a[i][j] = '*';
+            }
+            else if(i == 1)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
+                else if((j + 4) % 6 == 0) a[i][j] = 'U';
+                else a[i][j] = ' ';
+            }
+            else if(i == 3)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
+                else if((j + 4) % 6 == 0) a[i][j] = 'O';
+                else a[i][j] = ' ';
+            }
+            else if(i == 2)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
+                else if((j + 4) % 6 == 0) a[i][j] = 'N';
+                else a[i][j] = ' ';
+            }
+        }
+    }
+
+    // displaying computer cards :
+
+    printf("\033[0;32m");
+
+    for(int i = 0; i < 5; ++i)
+        {
+            for(int j = 0; j < m; ++j)
+            {
+                printf("%c ",a[i][j]);
+            }
+            printf("\n");
+        }
+
+    printf("\033[0m");
+
+    printf("\n");
+    printf("\n");
+    printf("\n");
+
+    for(int i = 0; i < 36; ++i)
+    {
+        printf(" ");
+    }
+
+    // creating depstack :
+
+
+    m = 5;
+    char b[5][m];
+    for(int i = 0; i < 5; ++i)
+    {
+        for(int j = 0; j < m; ++j)
+        {
+            if(i == 0 || i == 4)
+            {
+                if((j + 1) % 6 == 0) b[i][j] = ' ';
+                else b[i][j] = '*';
+            }
+            else if(i == 1)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) b[i][j] = '*';
+                else if((j + 4) % 6 == 0)
+                {
+                    b[i][j] = (*dep) -> color;
+                }
+                else b[i][j] = ' ';
+            }
+            else if(i == 3)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) b[i][j] = '*';
+                else if((j + 4) % 6 == 0)
+                {
+                    b[i][j] = (*dep) -> num;
+                }
+                else b[i][j] = ' ';
+            }
+            else if(i == 2)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) b[i][j] = '*';
+                else b[i][j] = ' ';
+            }
+        }
+    }
+
+    // creating deckstack :
+
+    m = 5;
+    char d[5][m];
+    for(int i = 0; i < 5; ++i)
+    {
+        for(int j = 0; j < m; ++j)
+        {
+            if(i == 0 || i == 4)
+            {
+                if((j + 1) % 6 == 0) d[i][j] = ' ';
+                else d[i][j] = '*';
+            }
+            else if(i == 1)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) d[i][j] = '*';
+                else if((j + 4) % 6 == 0) d[i][j] = 'U';
+                else d[i][j] = ' ';
+            }
+            else if(i == 3)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) d[i][j] = '*';
+                else if((j + 4) % 6 == 0) d[i][j] = 'O';
+                else d[i][j] = ' ';
+            }
+            else if(i == 2)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) d[i][j] = '*';
+                else if((j + 4) % 6 == 0) d[i][j] = 'N';
+                else d[i][j] = ' ';
+            }
+        }
+    }    
+
+    // printing depstack and deckstack :
+
+    for(int i = 0; i < 5; ++i)
+    {
+        for(int j = 0; j < m; ++j)
+        {
+            printf("%c ",b[i][j]);
+        }
+        for(int i = 0; i < 48; ++i)
+        {
+            printf(" ");
+        }
+        for(int j = 0; j < m; ++j)
+        {
+            printf("%c ",d[i][j]);
+        }
+        printf("\n");
+        for(int i = 0; i < 36; ++i)
+        {
+            printf(" ");
+        }
+    }
+    printf("\n");
+    printf("\n");
+    printf("\n");
+
+    // creating player cards :
+
+    n = 0;
+    struct Player *count2 = *player;
+    while(count2 -> next != NULL)
+    {
+        count2 = count2 -> next;
+        ++n;
+    }
+    ++n;
+    m = (6 * n) - 1;
+    char c[5][m];
+    struct Player *playercopy = *player;
+    for(int i = 0; i < 5; ++i)
+    {
+        for(int j = 0; j < m; ++j)
+        {
+            if(i == 0 || i == 4)
+            {
+                if((j + 1) % 6 == 0) c[i][j] = ' ';
+                else c[i][j] = '*';
+            }
+            else if(i == 1)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) c[i][j] = '*';
+                else if((j + 4) % 6 == 0) 
+                {
+                    c[i][j] = playercopy -> color;
+                }
+                else c[i][j] = ' ';
+            }
+            else if(i == 3)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) c[i][j] = '*';
+                else if((j + 4) % 6 == 0) 
+                {
+                    c[i][j] = playercopy -> num;
+                    playercopy = playercopy -> next;
+                }
+                else c[i][j] = ' ';
+            }
+            else if(i == 2)
+            {
+                if(j % 6 == 0 || (j + 2) % 6 == 0) c[i][j] = '*';
+                else c[i][j] = ' ';
+            }
+        }
+    }
+
+    // displaying player cards :
+
+    for(int i = 0; i < 5; ++i)
+        {
+            for(int j = 0; j < m; ++j)
+            {
+                printf("%c ",c[i][j]);
+            }
+            printf("\n");
+        }
+
+
+    printf("\n");
+    printf("\n");
+}
+
+
+
+
+int main()
+{
     struct Stack *deck = NULL; 
     struct Stack * dep = NULL;
     struct Player * head1 = NULL;
     struct Player * head2 = NULL;
     fillNumberedUnoDeck(&deck); 
-    displayStack(deck);
     DistributeFunc(&head1,&head2,&deck,&dep);
-    printf("\n\n");
-    traverseNode(head1);
-    printf("\n\n");
-    traverseNode(head2);
-    printf("\n\n");
-    displayStack(deck);
-    printf("\n");
-    displayStack(dep);
-    push(&dep,'R','3');
-    displayStack(dep);
-}
+    display(&head1,&head2,&deck,&dep);
+    
+    return 0;
+}   
