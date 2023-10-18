@@ -546,7 +546,8 @@ int main()
 
     for(int i=0; i<4; i++)
     {
-      printf(".....WELCOME TO UNO CARD GAME.....");
+      printf(".....WELCOME TO UNO CARD GAME.....\n");
+      (3 - i > 0) ? printf("%d",3 - i) : printf("GOO!!!");
       Sleep(500);
       system("cls");
       Sleep(500);
