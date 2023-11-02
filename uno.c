@@ -548,8 +548,8 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Numb
                     *head = ptr;
                     push(Dep, q->color, q->num);
                     free(q);
+                    return;
                 }
-                return;
         }
         if (ptr->color == color && ptr->num == Number) {
             q->next = ptr->next;
