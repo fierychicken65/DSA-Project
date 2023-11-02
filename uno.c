@@ -526,6 +526,34 @@ void creatcards(struct Player **head)
 
 }
 
+
+struct Player * DelFirst(struct Player * head){
+    struct Player * ptr = head;
+    head = head->next;
+    free(ptr);
+    return head;
+}
+
+void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Number) {
+    struct Player * ptr = (*head)->next;
+    struct Player * q = *head;
+
+    while (ptr != NULL) {
+        if (ptr->color == color && ptr->num == Number) {
+            q->next = ptr->next;
+            push(Dep, ptr->color, ptr->num);
+            free(ptr);
+            return;
+        }
+
+        ptr = ptr->next;
+        q = q->next;
+    }
+    
+    printf("Selected Card is not there in List");
+}
+
+
 int main()
 {
     struct Stack *deck = NULL; 
@@ -557,6 +585,24 @@ int main()
     struct Player *p2 = head2;
 
     display(&head2,&head1,&deck,&dep);
-    
+    int i = 0;
+    do
+    {
+        if (i%2==0)
+        {
+            char num;
+            char color;
+            printf("ENTER CARD:\n");
+            scanf(" %c", &color);
+            scanf(" %c", &num);
+            PlayerDep(&head2,&dep,color,num);
+            display(&head2,&head1,&deck,&dep);
+        }else{
+            head1=DelFirst(head1);
+        }
+        i++;
+    } while (head1 != NULL && head2 != NULL);
+    printf("Loop is over");
+    display(&head2,&head1,&deck,&dep);
     return 0;
 }   
