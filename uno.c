@@ -118,6 +118,7 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
     char a[5][m];
     for(int i = 0; i < 5; ++i)
     {
+        struct Player *computercopy = *computer;
         for(int j = 0; j < m; ++j)
         {
             if(i == 0 || i == 4)
@@ -128,19 +129,27 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
             else if(i == 1)
             {
                 if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
-                else if((j + 4) % 6 == 0) a[i][j] = 'U';
+                else if((j + 4) % 6 == 0)
+                {
+                    a[i][j] = computercopy -> color;
+                    computercopy = computercopy -> next;
+                }
                 else a[i][j] = ' ';
             }
             else if(i == 3)
             {
                 if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
-                else if((j + 4) % 6 == 0) a[i][j] = 'O';
+                else if((j + 4) % 6 == 0)
+                {
+                    a[i][j] = computercopy -> num;
+                    computercopy = computercopy -> next;
+                }
                 else a[i][j] = ' ';
             }
             else if(i == 2)
             {
                 if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
-                else if((j + 4) % 6 == 0) a[i][j] = 'N';
+                //else if((j + 4) % 6 == 0) a[i][j] = 'N';
                 else a[i][j] = ' ';
             }
         }
@@ -527,18 +536,21 @@ void creatcards(struct Player **head)
 }
 
 
-struct Player * DelFirst(struct Player * head){
-    struct Player * ptr = head;
-    head = head->next;
-    free(ptr);
-    return head;
-}
-
 void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Number) {
     struct Player * ptr = (*head)->next;
     struct Player * q = *head;
 
     while (ptr != NULL) {
+        if(q == *head)
+        {
+                if(q -> color == color && q -> num == Number)
+                {
+                    *head = ptr;
+                    push(Dep, q->color, q->num);
+                    free(q);
+                }
+                return;
+        }
         if (ptr->color == color && ptr->num == Number) {
             q->next = ptr->next;
             push(Dep, ptr->color, ptr->num);
@@ -581,14 +593,11 @@ int main()
       Sleep(500);
     }
 
-    struct Player *p1 = head1;
-    struct Player *p2 = head2;
-
     display(&head2,&head1,&deck,&dep);
-    int i = 0;
+    int current_turn = 0;// 0 for player, 1 for computer
     do
     {
-        if (i%2==0)
+        if (current_turn == 0)
         {
             char num;
             char color;
@@ -598,9 +607,9 @@ int main()
             PlayerDep(&head2,&dep,color,num);
             display(&head2,&head1,&deck,&dep);
         }else{
-            head1=DelFirst(head1);
+        
         }
-        i++;
+        current_turn++;
     } while (head1 != NULL && head2 != NULL);
     printf("Loop is over");
     display(&head2,&head1,&deck,&dep);
