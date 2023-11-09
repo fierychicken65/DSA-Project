@@ -552,10 +552,10 @@ void creatcards(struct Player **head)
 
 }
 
-
-void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Number) {
+void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, char color, char Number,int current_turn) {
     struct Player * ptr = (*head)->next;
     struct Player * q = *head;
+        
 
     while (ptr != NULL) {
         if ((*Dep)->color==color || (*Dep)->num==Number)
@@ -582,8 +582,16 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Numb
         ptr = ptr->next;
         q = q->next;
     }
+    if (color=='D' && Number=='R'){
+        char num;
+        char col;
+        pop(Deck,&num,&col);
+        //char num1,color1=num,color;
+        insertatend(head,num,col);
+        return;
+    }
     
-    printf("Selected Card is not there in List");
+    printf("Selected Card is not there in List or draw");
 }
 
 
@@ -625,7 +633,7 @@ int main()
             printf("ENTER CARD:\n");
             scanf(" %c", &color);
             scanf(" %c", &num);
-            PlayerDep(&head2,&dep,color,num);
+            PlayerDep(&head2,&dep,&deck,color,num,current_turn);
             display(&head2,&head1,&deck,&dep);
         }else{
         
