@@ -541,8 +541,10 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Numb
     struct Player * q = *head;
 
     while (ptr != NULL) {
-        if(q == *head)
+        if ((*Dep)->color==color || (*Dep)->num==Number)
         {
+            if(q == *head)
+            {
                 if(q -> color == color && q -> num == Number)
                 {
                     *head = ptr;
@@ -550,12 +552,14 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep, char color, char Numb
                     free(q);
                     return;
                 }
-        }
-        if (ptr->color == color && ptr->num == Number) {
-            q->next = ptr->next;
-            push(Dep, ptr->color, ptr->num);
-            free(ptr);
-            return;
+            }
+            if (ptr->color == color && ptr->num == Number) {
+                q->next = ptr->next;
+                push(Dep, ptr->color, ptr->num);
+                free(ptr);
+                return;
+            }
+            
         }
 
         ptr = ptr->next;
