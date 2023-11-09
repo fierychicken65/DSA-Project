@@ -88,8 +88,25 @@ void DropCardFunc(struct Player ** head, struct Stack ** deck) {
     }
 }
 
+void move_first_to_last(struct Stack **top)
+{
+    struct Stack *ptr = *top;
+    struct Stack *q = *top;
+    while(ptr->next != NULL)
+    {
+        ptr = ptr -> next;
+    }
+    ptr -> next = q;
+    *top = q -> next;
+    q -> next = NULL;
+}
+
 void DistributeFunc(struct Player ** head1,struct Player ** head2,struct Stack ** deck,struct Stack ** dep){
     char num,color;
+    while((*deck)->color == 'K' || (*deck)->num == 'S' || (*deck)->num == 'R' || (*deck)->num == '+')
+    {
+        move_first_to_last(deck);
+    }
     pop(deck,&num,&color);
     char num1 = num;
     char color1 = color;
@@ -588,14 +605,14 @@ int main()
 
     DistributeFunc(&head1,&head2,&deck,&dep);
 
-    for(int i=0; i<4; i++)
+    /*for(int i=0; i<4; i++)
     {
       printf(".....WELCOME TO UNO CARD GAME.....\n");
       (3 - i > 0) ? printf("%d",3 - i) : printf("GOO!!!");
       Sleep(500);
       system("cls");
       Sleep(500);
-    }
+    }*/
 
     display(&head2,&head1,&deck,&dep);
     int current_turn = 0;// 0 for player, 1 for computer
