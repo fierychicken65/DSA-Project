@@ -566,6 +566,8 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
     struct Player * ptr = (*head)->next;
     struct Player * q = *head;
 
+    // draw 2 :
+
     if((*Dep) -> color != 'K' && (*Dep) -> num == '+')
     {
         int draw2_present = 0;
@@ -608,6 +610,81 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
             scanf(" %c", &Number);
         }
     }
+
+    // skip :
+
+    if((*Dep) -> num == 'S')
+    {
+        int skip_present = 0;
+        while(ptr != NULL)
+        {
+            if(q == *head)
+            {
+                if(q -> num == 'S')
+                {
+                    skip_present = 1;
+                    break;
+                }
+            }
+
+            if(ptr -> num == 'S')
+            {
+                skip_present = 1;
+                break;
+            }
+            ptr = ptr -> next;
+            q = q -> next;
+        }
+        if(!skip_present)
+        {
+            printf("skipped \n");
+            return;
+        }
+        else
+        {
+            printf("ENTER CARD:\n");
+            scanf(" %c", &color);
+            scanf(" %c", &Number);
+        }
+    }
+
+    // reversed :
+
+    if((*Dep) -> num == 'R')
+    {
+        int reverse_present = 0;
+        while(ptr != NULL)
+        {
+            if(q == *head)
+            {
+                if(q -> num == 'R')
+                {
+                    reverse_present = 1;
+                    break;
+                }
+            }
+
+            if(ptr -> num == 'R')
+            {
+                reverse_present = 1;
+                break;
+            }
+            ptr = ptr -> next;
+            q = q -> next;
+        }
+        if(!reverse_present)
+        {
+            printf("reversed \n");
+            return;
+        }
+        else
+        {
+            printf("ENTER CARD:\n");
+            scanf(" %c", &color);
+            scanf(" %c", &Number);
+        }
+    }
+
         
 
     while (ptr != NULL) {
@@ -627,6 +704,18 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
                         computerDep(head,Dep,Deck,color,Number,draw_cards_count);
                         return;
                     }
+                    else if(Number == 'S')
+                    {
+                        display(&head2,&head1,Deck,Dep);
+                        computerDep(head,Dep,Deck,color,Number,draw_cards_count);
+                        return;
+                    }
+                    else if(Number == 'R')
+                    {
+                        display(&head2,&head1,Deck,Dep);
+                        computerDep(head,Dep,Deck,color,Number,draw_cards_count);
+                        return;
+                    }
                     return;
                 }
             }
@@ -639,7 +728,16 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
                     draw_cards_count += 2;
                     display(&head2,&head1,Deck,Dep);
                     computerDep(head,Dep,Deck,color,Number,draw_cards_count);
-                    return;
+                }
+                else if(Number == 'S')
+                {
+                    display(&head2,&head1,Deck,Dep);
+                    computerDep(head,Dep,Deck,color,Number,draw_cards_count);
+                }
+                else if(Number == 'R')
+                {
+                    display(&head2,&head1,Deck,Dep);
+                    computerDep(head,Dep,Deck,color,Number,draw_cards_count);
                 }
                 return;
             }
@@ -662,6 +760,8 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
 
 void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, char color, char Number,int draw_cards_count)
 {
+    // draw 2 :
+
     if((*Dep)->color != 'K' && (*Dep)->num == '+')
     {
         struct Player *q = head1;
@@ -706,6 +806,82 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
         }
         return;
     }
+
+    // skip :
+
+    if((*Dep)->num == 'S')
+    {
+        struct Player *q = head1;
+        struct Player *ptr = (head1) -> next;
+        while(ptr != NULL)
+        {
+            if(q == head1)
+            {
+                if(q -> num == 'S')
+                {
+                    head1 = ptr;
+                    push(Dep, q->color, q->num);
+                    free(q);
+                    display(&head2,&head1,Deck,Dep);
+                    PlayerDep(head,Dep,Deck,(*Dep)->color,(*Dep)->num,draw_cards_count);
+                    return;
+                }
+            }
+
+            if(ptr -> num == 'S')
+            {
+                q->next = ptr->next;
+                push(Dep, ptr->color, ptr->num);
+                free(ptr);
+                display(&head2,&head1,Deck,Dep);
+                PlayerDep(head,Dep,Deck,(*Dep)->color,(*Dep)->num,draw_cards_count);
+                return;
+            }
+            ptr = ptr -> next;
+            q = q -> next;
+        }
+        printf("skipped \n");
+        return;
+    }
+
+    // reverse :
+
+    if((*Dep)->num == 'R')
+    {
+        struct Player *q = head1;
+        struct Player *ptr = (head1) -> next;
+        while(ptr != NULL)
+        {
+            if(q == head1)
+            {
+                if(q -> num == 'R')
+                {
+                    head1 = ptr;
+                    push(Dep, q->color, q->num);
+                    free(q);
+                    display(&head2,&head1,Deck,Dep);
+                    PlayerDep(head,Dep,Deck,(*Dep)->color,(*Dep)->num,draw_cards_count);
+                    return;
+                }
+            }
+
+            if(ptr -> num == 'R')
+            {
+                q->next = ptr->next;
+                push(Dep, ptr->color, ptr->num);
+                free(ptr);
+                display(&head2,&head1,Deck,Dep);
+                PlayerDep(head,Dep,Deck,(*Dep)->color,(*Dep)->num,draw_cards_count);
+                return;
+            }
+            ptr = ptr -> next;
+            q = q -> next;
+        }
+        printf("reversed \n");
+        return;
+    }
+
+
 }
 
 
