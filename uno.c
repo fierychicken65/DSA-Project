@@ -925,7 +925,7 @@ int main()
             display(&head2,&head1,&deck,&dep);
             current_turn = 1;
         }else{
-        
+            current_turn = 0;
         }
     } while (head1 != NULL && head2 != NULL);
     printf("Loop is over");
