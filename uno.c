@@ -567,6 +567,7 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
     struct Player * ptr = (*head)->next;
     struct Player * q = *head;
 
+
     if(play_special_card)
     {
         // draw 2 :
@@ -574,17 +575,15 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         if((*Dep) -> color != 'K' && (*Dep) -> num == '+')
         {
             int draw2_present = 0;
-            while(ptr != NULL)
-            {
-                if(q == *head)
+            if(q == *head)
                 {
                     if(q -> color != 'K' && q -> num == '+')
                     {
                         draw2_present = 1;
-                        break;
                     }
                 }
-
+            while(ptr != NULL && !draw2_present)
+            {
                 if(ptr -> color != 'K' && ptr -> num == '+')
                 {
                     draw2_present = 1;
@@ -596,7 +595,7 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
             if(!draw2_present)
             {
                 printf("Drawcount = %d\n",draw_cards_count);
-                while(draw_cards_count--)
+                for(int i = 0; i < draw_cards_count; ++i)
                 {
                     char num;
                     char col;
@@ -604,6 +603,7 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
                     insertatend(head,num,col);
                 }
                 play_special_card = 0;
+                draw_cards_count = 0;
                 return;
             }
         }
@@ -613,17 +613,15 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         if((*Dep) -> num == 'S')
         {
             int skip_present = 0;
-            while(ptr != NULL)
-            {
-                if(q == *head)
+            if(q == *head)
                 {
                     if(q -> num == 'S')
                     {
                         skip_present = 1;
-                        break;
                     }
                 }
-
+            while(ptr != NULL && !skip_present)
+            {
                 if(ptr -> num == 'S')
                 {
                     skip_present = 1;
@@ -645,17 +643,15 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         if((*Dep) -> num == 'R')
         {
             int reverse_present = 0;
-            while(ptr != NULL)
-            {
-                if(q == *head)
+            if(q == *head)
                 {
                     if(q -> num == 'R')
                     {
                         reverse_present = 1;
-                        break;
                     }
                 }
-
+            while(ptr != NULL && !reverse_present)
+            {
                 if(ptr -> num == 'R')
                 {
                     reverse_present = 1;
@@ -676,6 +672,14 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
     printf("ENTER CARD:\n");
     scanf(" %c", &color);
     scanf(" %c", &Number);
+
+    while(play_special_card && Number != (*Dep) -> num)
+    {
+        printf("invalid choice! please enter again: \n");
+        printf("ENTER CARD:\n");
+        scanf(" %c", &color);
+        scanf(" %c", &Number);
+    }
 
     while (ptr != NULL) {
         if ((*Dep)->color==color || (*Dep)->num==Number)
@@ -733,10 +737,29 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         char col;
         pop(Deck,&num,&col);
         insertatend(head,num,col);
+
         return;
     }
+
+    // if one card is remaining :
+
+    if(q == *head && ptr == NULL)
+    {
+        if ((*Dep)->color==color || (*Dep)->num==Number)
+        {
+            push(Dep, q->color, q->num);
+            *head = NULL;
+            free(q);
+            if(color != 'K' && Number == '+')
+            {
+                draw_cards_count += 2;
+                play_special_card = 1;
+            }
+            return;
+        }
+    }
     
-    printf("invalid choice! please enter again : \n\n");
+    printf("invalid choice! please enter again: \n\n");
     PlayerDep(head,Dep,Deck,color,Number);
 }
 
@@ -752,9 +775,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
         {
             struct Player *q = head1;
             struct Player *ptr = (head1) -> next;
-            while(ptr != NULL)
-            {
-                if(q == head1)
+            if(q == head1)
                 {
                     if(q -> color != 'K' && q -> num == '+')
                     {
@@ -765,7 +786,8 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                         return;
                     }
                 }
-
+            while(ptr != NULL)
+            {
                 if(ptr -> color != 'K' && ptr -> num == '+')
                 {
                     q->next = ptr->next;
@@ -778,7 +800,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                 q = q -> next;
             }
             printf("Drawcount = %d\n",draw_cards_count);
-            while(draw_cards_count--)
+            for(int i = 0; i < draw_cards_count; ++i)
             {
                 char num;
                 char col;
@@ -786,6 +808,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                 insertatend(&head1,num,col);
             }
             play_special_card = 0;
+            draw_cards_count = 0;
             return;
         }
 
@@ -795,9 +818,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
         {
             struct Player *q = head1;
             struct Player *ptr = (head1) -> next;
-            while(ptr != NULL)
-            {
-                if(q == head1)
+            if(q == head1)
                 {
                     if(q -> num == 'S')
                     {
@@ -807,7 +828,8 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                         return;
                     }
                 }
-
+            while(ptr != NULL)
+            {
                 if(ptr -> num == 'S')
                 {
                     q->next = ptr->next;
@@ -829,9 +851,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
         {
             struct Player *q = head1;
             struct Player *ptr = (head1) -> next;
-            while(ptr != NULL)
-            {
-                if(q == head1)
+            if(q == head1)
                 {
                     if(q -> num == 'R')
                     {
@@ -841,7 +861,8 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                         return;
                     }
                 }
-
+            while(ptr != NULL)
+            {
                 if(ptr -> num == 'R')
                 {
                     q->next = ptr->next;
@@ -873,6 +894,19 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                 *head = ptr;
                 push(Dep, q->color, q->num);
                 free(q);
+                if(q->color != 'K' && q->num == '+')
+                {
+                    draw_cards_count += 2;
+                    play_special_card = 1;
+                }
+                else if(q->num == 'S')
+                {
+                    play_special_card = 1;
+                }
+                else if(q->num == 'R')
+                {
+                    play_special_card = 1;
+                }
                 return;
             }
         }
@@ -881,11 +915,43 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
             q->next = ptr->next;
             push(Dep, ptr->color, ptr->num);
             free(ptr);
+            if(ptr->color != 'K' && ptr->num == '+')
+                {
+                    draw_cards_count += 2;
+                    play_special_card = 1;
+                }
+            else if(ptr->num == 'S')
+                {
+                    play_special_card = 1;
+                }
+            else if(ptr->num == 'R')
+                {
+                    play_special_card = 1;
+                }
             return;
         }
         ptr = ptr -> next;
         q = q -> next;
     }
+
+    // if one card is remaining :
+
+    if(q == *head && ptr == NULL)
+    {
+        if ((*Dep)->color==q->color || (*Dep)->num==q->num)
+        {
+            push(Dep, q->color, q->num);
+            *head = NULL;
+            free(q);
+            if((*Dep)->color != 'K' && (*Dep)->num == '+')
+            {
+                draw_cards_count += 2;
+                play_special_card = 1;
+            }
+            return;
+        }
+    }
+
     char num;
     char col;
     printf("computer drawing card : \n");
@@ -899,6 +965,7 @@ int main()
     struct Stack *deck = NULL; 
     struct Stack * dep = NULL;
     struct Player* head = NULL;
+    int gameover = 0;
 
 
     creatcards(&head);
@@ -910,14 +977,14 @@ int main()
 
     DistributeFunc(&head1,&head2,&deck,&dep);
 
-    for(int i=0; i<4; i++)
+    /*for(int i=0; i<4; i++)
     {
       printf(".....WELCOME TO UNO CARD GAME.....\n");
       (3 - i > 0) ? printf("%d",3 - i) : printf("GOO!!!");
       Sleep(500);
       system("cls");
       Sleep(500);
-    }
+    }*/
 
     display(&head2,&head1,&deck,&dep);
     int current_turn = 0; // 0 for player, 1 for computer
@@ -928,17 +995,22 @@ int main()
             char num;
             char color;
             PlayerDep(&head2,&dep,&deck,color,num);
-            display(&head2,&head1,&deck,&dep);
+            //display(&head2,&head1,&deck,&dep);
             current_turn = 1;
         }else{
             char num;
             char color;
             computerDep(&head1,&dep,&deck,color,num);
-            display(&head2,&head1,&deck,&dep);
+            //display(&head2,&head1,&deck,&dep);
             current_turn = 0;
         }
-    } while (head1 != NULL && head2 != NULL);
+        display(&head2,&head1,&deck,&dep);
+        if(head1 == NULL || head2 == NULL)
+        {
+            gameover = 1;
+        }
+    } while (!gameover);
+
     printf("Game is over");
-    display(&head2,&head1,&deck,&dep);
     return 0;
 }   
