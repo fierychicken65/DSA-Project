@@ -24,6 +24,7 @@ struct Player{
 
 int draw_cards_count = 0;
 int play_special_card = 0;
+char wildcard_color = 'R';
 struct Player * head1 = NULL; //computer
 struct Player * head2 = NULL; // player
 
@@ -705,8 +706,6 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
                 return;
             }
         }
-
-
     }
 
     printf("ENTER CARD:\n");
@@ -716,6 +715,17 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
     if((*Dep)->color == 'K' && (*Dep)->num == '+' && play_special_card)
     {
         while(color != 'K' && Number != '+')
+        {
+            printf("invalid choice! please enter again: \n");
+            printf("ENTER CARD:\n");
+            scanf(" %c", &color);
+            scanf(" %c", &Number);
+        }
+    }
+
+    if((*Dep)->color == 'K' && (*Dep)->num == 'W')
+    {
+        while(!(color == 'K' && Number == 'W') && color != wildcard_color && !(color == 'D' && Number == 'R'))
         {
             printf("invalid choice! please enter again: \n");
             printf("ENTER CARD:\n");
@@ -815,6 +825,78 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
             }
         }
 
+        else if(color == 'K' && Number == 'W')
+        {
+            if(q == *head)
+            {
+                if(q->color == 'K' && q->num == 'W')
+                {
+                    *head = ptr;
+                    push(Dep, q->color, q->num);
+                    free(q);
+                    play_special_card = 1;
+                    printf("enter colour : ");
+                    scanf(" %c",&wildcard_color);
+                    return;
+                }
+            }
+            if(ptr->color == 'K' && ptr->num == 'W')
+            {
+                q->next = ptr->next;
+                push(Dep, ptr->color, ptr->num);
+                free(ptr);
+                play_special_card = 1;
+                printf("enter colour : ");
+                scanf(" %c",&wildcard_color);
+                return;
+            }
+        }
+        if (((*Dep)->color == 'K' && (*Dep)->num == 'W') && color == wildcard_color)
+        {
+            if(q == *head)
+            {
+                if(q -> color == color && q -> num == Number)
+                {
+                    *head = ptr;
+                    push(Dep, q->color, q->num);
+                    free(q);
+                    if(color != 'K' && Number == '+')
+                    {
+                        draw_cards_count += 2;
+                        play_special_card = 1;
+                    }
+                    else if(Number == 'S')
+                    {
+                        play_special_card = 1;
+                    }
+                    else if(Number == 'R')
+                    {
+                        play_special_card = 1;
+                    }
+                    return;
+                }
+            }
+            if (ptr->color == color && ptr->num == Number) {
+                q->next = ptr->next;
+                push(Dep, ptr->color, ptr->num);
+                free(ptr);
+                if(color != 'K' && Number == '+')
+                {
+                    draw_cards_count += 2;
+                    play_special_card = 1;
+                }
+                else if(Number == 'S')
+                {
+                    play_special_card = 1;
+                }
+                else if(Number == 'R')
+                {
+                    play_special_card = 1;
+                }
+                return;
+            }
+        }
+
         ptr = ptr->next;
         q = q->next;
     }
@@ -823,7 +905,7 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         char col;
         pop(Deck,&num,&col);
         insertatend(head,num,col);
-
+        if((*Dep)->color == 'K' && (*Dep)->num == 'W') play_special_card = 1;
         return;
     }
 
@@ -1007,6 +1089,119 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
             return;
         }
 
+        // wild card :
+
+        if((*Dep)->color == 'K' && (*Dep)->num == 'W')
+        {
+            struct Player *q = head1;
+            struct Player *ptr = (head1) -> next;
+            if(q == head1)
+                {
+                    if(q -> color == 'K' && q -> num == 'W')
+                    {
+                        head1 = ptr;
+                        push(Dep, q->color, q->num);
+                        free(q);
+                        while(ptr != NULL)
+                        {
+                            if(ptr -> color != 'K')
+                            {
+                                wildcard_color = ptr->color;
+                                break;
+                            }
+                            ptr = ptr -> next;
+                        }
+                        printf("color chosen by computer : %c\n",wildcard_color);
+                        play_special_card = 0;
+                        return;
+                    }
+                }
+            while(ptr != NULL)
+            {
+                if(ptr -> color == 'K' && ptr -> num == 'W')
+                {
+                    q->next = ptr->next;
+                    push(Dep, ptr->color, ptr->num);
+                    free(ptr);
+                    while(q != NULL)
+                        {
+                            if(q -> color != 'K')
+                            {
+                                wildcard_color = q->color;
+                                break;
+                            }
+                            q = q -> next;
+                        }
+                        printf("color chosen by computer : %c\n",wildcard_color);
+                    play_special_card = 0;
+                    return;
+                }
+                ptr = ptr -> next;
+                q = q -> next;
+            }
+
+            q = head1;
+            ptr = (head1)->next;
+            if(q == head1)
+                {
+                    if(q -> color == wildcard_color)
+                    {
+                        head1 = ptr;
+                        push(Dep, q->color, q->num);
+                        free(q);
+                        if(color != 'K' && Number == '+')
+                        {
+                            draw_cards_count += 2;
+                            play_special_card = 1;
+                        }
+                        else if(Number == 'S')
+                        {
+                            play_special_card = 1;
+                        }
+                        else if(Number == 'R')
+                        {
+                            play_special_card = 1;
+                        }
+                        else play_special_card = 0;
+                        return;
+                     }
+                }
+            while(ptr != NULL)
+            {
+                if(ptr -> color == wildcard_color)
+                {
+                    q->next = ptr->next;
+                    push(Dep, ptr->color, ptr->num);
+                    free(ptr);
+                    if(color != 'K' && Number == '+')
+                        {
+                            draw_cards_count += 2;
+                            play_special_card = 1;
+                        }
+                        else if(Number == 'S')
+                        {
+                            play_special_card = 1;
+                        }
+                        else if(Number == 'R')
+                        {
+                            play_special_card = 1;
+                        }
+                        else play_special_card = 0;
+                    return;
+                }
+                ptr = ptr -> next;
+                q = q -> next;
+            }
+            char num;
+            char col;
+            printf("computer drawing card : \n");
+            pop(Deck,&num,&col);
+            insertatend(head,num,col);
+            play_special_card = 0;
+            draw_cards_count = 0;
+            return;
+        }
+
 
     }
 
@@ -1020,7 +1215,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
     {
         if(q == *head)
         {
-            if((q -> color == color || q -> num == Number) || (q->color == 'K' && q->num == '+') || (color == 'K' && Number == '+'))
+            if((q -> color == color || q -> num == Number) || (q->color == 'K' && q->num == '+') || (color == 'K' && Number == '+') || (q->color == 'K' && q->num == 'W'))
             {
                 *head = ptr;
                 push(Dep, q->color, q->num);
@@ -1043,10 +1238,24 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
                     draw_cards_count += 4;
                     play_special_card = 1;
                 }
+                else if(q->color == 'K' && q->num == 'W')
+                {
+                        while(ptr != NULL)
+                        {
+                            if(ptr -> color != 'K')
+                            {
+                                wildcard_color = ptr->color;
+                                break;
+                            }
+                            ptr = ptr -> next;
+                        }
+                        printf("color chosen by computer : %c\n",wildcard_color);
+                        play_special_card = 0;
+                }
                 return;
             }
         }
-        if((ptr -> color == color || ptr -> num == Number) || (ptr->color == 'K' && ptr->num == '+'))
+        if((ptr -> color == color || ptr -> num == Number) || (ptr->color == 'K' && ptr->num == '+') || (ptr->color == 'K' && ptr->num == 'W'))
         {
             q->next = ptr->next;
             push(Dep, ptr->color, ptr->num);
@@ -1068,6 +1277,20 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
             {
                 draw_cards_count += 4;
                 play_special_card = 1;
+            }
+            else if(ptr->color == 'K' && ptr->num == 'W')
+            {
+                while(q != NULL)
+                    {
+                        if(q -> color != 'K')
+                        {
+                            wildcard_color = q->color;
+                            break;
+                        }
+                        q = q -> next;
+                    }
+                    printf("color chosen by computer : %c\n",wildcard_color);
+                    play_special_card = 0;
             }
             return;
         }
