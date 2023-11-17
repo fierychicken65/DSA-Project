@@ -708,6 +708,8 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
         }
     }
 
+    // main functioning starts here :
+
     printf("ENTER CARD:\n");
     scanf(" %c", &color);
     scanf(" %c", &Number);
@@ -1210,6 +1212,8 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
 
     }
 
+    // main functioning :
+
     struct Player * ptr = (*head)->next;
     struct Player * q = *head;
     color = (*Dep)->color;
@@ -1325,6 +1329,8 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
             return;
         }
     }
+
+    // drawing a card :
 
     char num;
     char col;
