@@ -162,6 +162,7 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
                 {
                     a[i][j] = computercopy -> color;
                     computercopy = computercopy -> next;
+                    //a[i][j] = 'U';
                 }
                 else a[i][j] = ' ';
             }
@@ -170,8 +171,9 @@ void display(struct Player **player, struct Player **computer, struct Stack **de
                 if(j % 6 == 0 || (j + 2) % 6 == 0) a[i][j] = '*';
                 else if((j + 4) % 6 == 0)
                 {
-                    a[i][j] = computercopy -> num;
+                   a[i][j] = computercopy -> num;
                     computercopy = computercopy -> next;
+                    //a[i][j] = 'O';
                 }
                 else a[i][j] = ' ';
             }
@@ -1387,20 +1389,22 @@ int main()
             //display(&head2,&head1,&deck,&dep);
             current_turn = 0;
         }
+        if(head1 != NULL && head2 != NULL){
         display(&head2,&head1,&deck,&dep);
+        }
         if(head1 == NULL || head2 == NULL)
         {
             gameover = 1;
         }
         if (head1==NULL)
         {
-            printf("Computer Wins");
+            printf("\nComputer Wins\n");
 
         }else if(head2==NULL){
-            printf("Player Wins");
+            printf("\nPlayer Wins\n");
         }
     
     } while (!gameover);
-    printf("Game is over");
+    printf("Game is over!!!");
     return 0;
 }   
