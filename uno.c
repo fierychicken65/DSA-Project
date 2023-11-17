@@ -913,7 +913,7 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
 
     if(q == *head && ptr == NULL)
     {
-        if ((*Dep)->color==color || (*Dep)->num==Number)
+        if (((*Dep)->color==color || (*Dep)->num==Number) || (color == 'K' && Number == '+') || (color == 'K' && Number == 'W'))
         {
             push(Dep, q->color, q->num);
             *head = NULL;
@@ -921,6 +921,11 @@ void PlayerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck, 
             if(color != 'K' && Number == '+')
             {
                 draw_cards_count += 2;
+                play_special_card = 1;
+            }
+            else if(color != 'K' && Number == '+')
+            {
+                draw_cards_count += 4;
                 play_special_card = 1;
             }
             return;
@@ -1302,7 +1307,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
 
     if(q == *head && ptr == NULL)
     {
-        if ((*Dep)->color==q->color || (*Dep)->num==q->num)
+        if (((*Dep)->color==q->color || (*Dep)->num==q->num) || (q->color == 'K' && q->num == '+') || (q->color == 'K' && q->num == 'W'))
         {
             push(Dep, q->color, q->num);
             *head = NULL;
@@ -1310,6 +1315,11 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
             if((*Dep)->color != 'K' && (*Dep)->num == '+')
             {
                 draw_cards_count += 2;
+                play_special_card = 1;
+            }
+            else if((*Dep)->color == 'K' && (*Dep)->num == '+')
+            {
+                draw_cards_count += 4;
                 play_special_card = 1;
             }
             return;
@@ -1324,6 +1334,7 @@ void computerDep(struct Player ** head, struct Stack ** Dep,struct Stack ** Deck
 
 }
 
+
 int main()
 {
     struct Stack *deck = NULL; 
@@ -1334,21 +1345,23 @@ int main()
 
     creatcards(&head);
 
+
     for(int i = 108; i > 0; --i)
     {
         shuffle(&head , &deck , i);
     }
 
+
     DistributeFunc(&head1,&head2,&deck,&dep);
 
-    /*for(int i=0; i<4; i++)
+    for(int i=0; i<4; i++)
     {
       printf(".....WELCOME TO UNO CARD GAME.....\n");
       (3 - i > 0) ? printf("%d",3 - i) : printf("GOO!!!");
       Sleep(500);
       system("cls");
       Sleep(500);
-    }*/
+    }
 
     display(&head2,&head1,&deck,&dep);
     int current_turn = 0; // 0 for player, 1 for computer
@@ -1373,8 +1386,15 @@ int main()
         {
             gameover = 1;
         }
-    } while (!gameover);
+        if (head1==NULL)
+        {
+            printf("Computer Wins");
 
+        }else if(head2==NULL){
+            printf("Player Wins");
+        }
+    
+    } while (!gameover);
     printf("Game is over");
     return 0;
 }   
